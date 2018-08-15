@@ -1,5 +1,10 @@
 "
-(self height: 3) openInWorld
+To see a demo of a binary tree of height 3
+
+     (self height: 3) openInWorld
+
+
+	  self new openInWorld
 "
 Class {
 	#name : #ClBinaryTreeDemo,
@@ -115,6 +120,7 @@ ClBinaryTreeDemo >> initialize [
 	| xspace yspace index nleaves nodecount left right px |
 	xspace := 20.  
 	yspace := 20.
+	height := 4.
 	super initialize.
 	nodes := Dictionary new.
 	

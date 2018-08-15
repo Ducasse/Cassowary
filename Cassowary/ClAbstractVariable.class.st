@@ -66,6 +66,7 @@ ClAbstractVariable >> printOn: aStream [
 		CV#345(10.0)	- without name"
 
 	self name 
-		ifNil: [aStream nextPutAll: 'CV#', self hash printString]
+		ifNil: [aStream nextPutAll: 'CV#'; print: self hash ]
 		ifNotNil: [aStream nextPutAll: self name].
+
 ]

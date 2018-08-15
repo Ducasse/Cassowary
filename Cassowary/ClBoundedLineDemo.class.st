@@ -1,5 +1,7 @@
 "
-self new openInWorld
+To see a demo 
+
+	self new openInWorld
 "
 Class {
 	#name : #ClBoundedLineDemo,

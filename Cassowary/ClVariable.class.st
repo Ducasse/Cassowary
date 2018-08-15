@@ -57,13 +57,12 @@ ClVariable >> @ anObject [
 	^ Point x: self y: anObject
 ]
 
-{ #category : #operations }
+{ #category : #conversion }
 ClVariable >> asLinearExpression [
 	"Coerce this variable to be a linear expression.
-
 	<answer> 	<ClLinearExpression>"
+	
 	| expr |
-
 	expr := ClLinearExpression new.
 	expr terms at: self put: 1.0.
 	^ expr
@@ -72,18 +71,15 @@ ClVariable >> asLinearExpression [
 { #category : #operations }
 ClVariable >> cnEqual: expr [
 	"Answer a linear constraint self=expr with strength=required and weight=1.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	<answer>	<ClLinearEquation>"
 
-	^ self cnEqual: expr strength: ClStrength required weight: 1.0
-
+	^ self cnEqual: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #operations }
 ClVariable >> cnEqual: expr strength: s [
 	"Answer a linear constraint self=expr of strength s and weight=1.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	s 			<ClStrength>
 	<answer>	<ClLinearEquation>"
@@ -94,16 +90,15 @@ ClVariable >> cnEqual: expr strength: s [
 { #category : #operations }
 ClVariable >> cnEqual: expr strength: s weight: w [
 	"Answer a linear constraint self=expr of strength s and weight w.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	s 			<ClStrength>
 	w 			<Float>
 	<answer>	<ClLinearEquation>"
-	| cn |
 
+	| cn |
 	cn := ClLinearEquation new.
 	cn 
-		expression: self-expr; 
+		expression: self - expr; 
 		strength: s; 
 		weight: w.
 	^ cn
@@ -112,17 +107,15 @@ ClVariable >> cnEqual: expr strength: s weight: w [
 { #category : #operations }
 ClVariable >> cnGEQ: expr [
 	"Answer a linear constraint self>=expr with strength=required and weight=1.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	<answer>	<ClLinearInequality>"
 
-	^ self cnGEQ: expr strength: ClStrength required weight: 1.0
+	^ self cnGEQ: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #operations }
 ClVariable >> cnGEQ: expr strength: s [
 	"Answer a linear constraint self>=expr of strength s and weight=1.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	s 			<ClStrength>
 	<answer>	<ClLinearInequality>"
@@ -138,11 +131,11 @@ ClVariable >> cnGEQ: expr strength: s weight: w [
 	s 			<ClStrength>
 	w 			<Float>
 	<answer>	<ClLinearEquation>"
+	
 	| cn |
-
 	cn := ClLinearInequality new.
 	cn 
-		expression: self-expr; 
+		expression: self - expr; 
 		strength: s; 
 		weight: w.
 	^ cn
@@ -151,11 +144,10 @@ ClVariable >> cnGEQ: expr strength: s weight: w [
 { #category : #operations }
 ClVariable >> cnLEQ: expr [
 	"Answer a linear constraint self<=expr with strength=required and weight=1.
-
 	expr 		<ClLinearExpression | ClVariable | Number>
 	<answer>	<ClLinearInequality>"
 
-	^ self cnLEQ: expr strength: ClStrength required weight: 1.0
+	^ self cnLEQ: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #operations }
@@ -171,14 +163,13 @@ ClVariable >> cnLEQ: expr strength: s [
 
 { #category : #operations }
 ClVariable >> cnLEQ: expr strength: s weight: w [
-	"Answer a linear constraint self<=expr of strength s and weight w.
-
+	"Answer a linear constraint self <= expr of strength s and weight w.
 	expr 		<ClLinearExpression | ClVariable | Number>
 	s 			<ClStrength>
 	w 			<Float>
 	<answer>	<ClLinearEquation>"
+
 	| cn |
-	
 	cn := ClLinearInequality new.
 	cn 
 		expression: expr asLinearExpression - self asLinearExpression; 
@@ -228,10 +219,14 @@ ClVariable >> printOn: aStream [
 	aStream nextPutAll: '['.  self value printOn: aStream.  aStream nextPutAll: ']'
 ]
 
+{ #category : #constants }
+ClVariable >> requiredStrength [
+	^ ClStrength required
+]
+
 { #category : #operations }
 ClVariable >> subtractFrom: aNumber [
-	"Answer a new linear expression (aNumber-self).
-
+	"Answer a new linear expression (aNumber - self).
 	<answer> <ClLinearExpression>"
 
 	^ self negated + aNumber
