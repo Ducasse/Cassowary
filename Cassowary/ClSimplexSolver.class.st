@@ -782,11 +782,13 @@ ClSimplexSolver >> resetEditConstants [
 	"Each of the non-required edits will be represented by an equation of the form
 		v = c + eplus - eminus
 where v is the variable with the edit, c is the previous edit value, and eplus and eminus are slack variables that hold the error in satisfying the edit constraint.  We are about to change something, and we want to fix the constants in the equations representing the edit constraints.  If one of eplus and eminus is basic, the other must occur only in the expression for that basic error variable.  (They can't both be basic.)  Fix the constant in this expression.  Otherwise they are both nonbasic.  Find all of the expressions in which they occur, and fix the constants in those.  See the UIST paper for details."
+
 	| delta nn pp |
 
 	self newEditConstants size = self editPlusErrorVars size ifFalse: [
 		"number of edit constants doesn't match the number of edit error variables"
 		ClInternalError signal: 'number of edit constants doesn''t match the number of edit error variables' ].
+	
 	1 to: self newEditConstants size do: [:i |
 		nn := self newEditConstants.
 		pp := self prevEditConstants.
