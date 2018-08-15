@@ -9,9 +9,9 @@ Class {
 
 { #category : #accessing }
 ClLinearConstraint >> expression [
-	"Answer my linear expression. (For linear equations, this constraint represents expression=0; for linear inequalities it represents expression>=0."
-
-	^ expression  "a CLLinearExpression"
+	"Answer my linear expression. (For linear equations, this constraint represents expression=0; for linear inequalities it represents expression>=0.
+	<answer> a CLLinearExpression"
+	^ expression  
 ]
 
 { #category : #private }

@@ -10,6 +10,7 @@ Class {
 
 { #category : #'instance creation' }
 ClLinearExpression class >> newWithSymbolicWeight [
+
 	| newGuy |
 	newGuy := self new.
 	newGuy constant: ClSymbolicWeight zero.
@@ -19,8 +20,8 @@ ClLinearExpression class >> newWithSymbolicWeight [
 { #category : #manipulation }
 ClLinearExpression >> * x [
 	"Answer a new CLLinearExpression formed by multiplying self by x.  (Note that this result must be linear.)"
+	
 	| expr n result |
-
 	"If this expression is just a constant then we can just multiply by it..."
 	self isConstant ifTrue: [^ x * self constant].
 
@@ -147,10 +148,10 @@ ClLinearExpression >> anyVariable [
 	"Answer any ClAbstractVariable from this expression. (It is an error if this expression is constant)"
 
 	self terms keysDo: [:v | ^ v].
-	ClError internalError signal  "expression is constant"
+	ClError signal: 'Expression is constant and this should not be the case'
 ]
 
-{ #category : #accessing }
+{ #category : #conversion }
 ClLinearExpression >> asLinearExpression [
 
 	^ self
@@ -182,16 +183,14 @@ ClLinearExpression >> changeSubject: oldSubject newSubject: newSubject [
 { #category : #accessing }
 ClLinearExpression >> cnEqual: expr [
 	"Answer a ClLinearEquation self=expr with strength=required and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>"
 
-	^ self cnEqual: expr strength: ClStrength required weight: 1.0
+	^ self cnEqual: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #accessing }
 ClLinearExpression >> cnEqual: expr strength: s [
 	"Answer a ClLinearEquation self=expr with strength s and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>"
 
@@ -201,14 +200,13 @@ ClLinearExpression >> cnEqual: expr strength: s [
 { #category : #accessing }
 ClLinearExpression >> cnEqual: expr strength: s weight: w [
 	"Answer a ClLinearEquation self=expr with strength s and weight w.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>
 	w		<Float>"
 	| cn |
 
 	cn := ClLinearEquation new.
-	cn expression: self-expr; strength: s; weight: w.
+	cn expression: self - expr; strength: s; weight: w.
 	^ cn
 
 ]
@@ -216,16 +214,14 @@ ClLinearExpression >> cnEqual: expr strength: s weight: w [
 { #category : #accessing }
 ClLinearExpression >> cnGEQ: expr [
 	"Answer a ClLinearInequality self>=expr with strength=required and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>"
 
-	^ self cnGEQ: expr strength: ClStrength required weight: 1.0
+	^ self cnGEQ: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #accessing }
 ClLinearExpression >> cnGEQ: expr strength: s [
 	"Answer a ClLinearInequality self>=expr with strength s and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>"
 
@@ -235,14 +231,13 @@ ClLinearExpression >> cnGEQ: expr strength: s [
 { #category : #accessing }
 ClLinearExpression >> cnGEQ: expr strength: s weight: w [
 	"Answer a ClLinearInequality self>=expr with strength s and weight w.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>
 	w		<Float>"
+			
 	| cn |
-
 	cn := ClLinearInequality new.
-	cn expression: self-expr; strength: s; weight: w.
+	cn expression: self - expr; strength: s; weight: w.
 	^ cn
 
 ]
@@ -250,16 +245,14 @@ ClLinearExpression >> cnGEQ: expr strength: s weight: w [
 { #category : #accessing }
 ClLinearExpression >> cnLEQ: expr [
 	"Answer a ClLinearInequality self<=expr with strength=required and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>"
 
-	^ self cnLEQ: expr strength: ClStrength required weight: 1.0
+	^ self cnLEQ: expr strength: self requiredStrength weight: 1.0
 ]
 
 { #category : #accessing }
 ClLinearExpression >> cnLEQ: expr strength: s [
 	"Answer a ClLinearInequality self<=expr with strength s and weight=1.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>"
 
@@ -269,14 +262,13 @@ ClLinearExpression >> cnLEQ: expr strength: s [
 { #category : #accessing }
 ClLinearExpression >> cnLEQ: expr strength: s weight: w [
 	"Answer a ClLinearInequality self<=expr with strength s and weight w.
-
 	expr	<ClLinearExpression | ClVariable | Number>
 	s		<ClStrength>
 	w		<Float>"
 	| cn |
 
 	cn := ClLinearInequality new.
-	cn expression: expr-self; strength: s; weight: w.
+	cn expression: expr - self; strength: s; weight: w.
 	^ cn
 
 ]
@@ -308,7 +300,8 @@ ClLinearExpression >> divFrom: aNumber [
 	"Answer a new ClLinearExpression (aNumber/self).  Since the result must be linear, this is permissible only if self is a constant."
 
 	self isConstant ifTrue: [^ aNumber / self constant].
-	ClError nonlinear signal "result would be non-linear"
+	"nonLinear Error"
+	ClError signal: 'result would be non-linear'
 ]
 
 { #category : #manipulation }
@@ -322,7 +315,7 @@ ClLinearExpression >> incrementConstant: aNumber [
 ClLinearExpression >> initialize [
 	"Initialize this linear expression to 0"
 
-	self flag: #schwa.  "original code uses LookupTable instead of Dictionary"
+	"original code uses LookupTable instead of Dictionary"
 	self 
 		constant: 0.0;
 		terms: Dictionary new.
@@ -369,6 +362,11 @@ ClLinearExpression >> printOn: aStream [
 		v printOn: aStream].
 ]
 
+{ #category : #accessing }
+ClLinearExpression >> requiredStrength [
+	^ ClStrength required
+]
+
 { #category : #manipulation }
 ClLinearExpression >> substituteOut: var expr: expr subject: subject solver: solver [
 	"Replace var with a symbolic expression expr that is equal to it.  If a variable has been added to this expression that wasn't therer before, or if a variable has been dropped from this expression because it now has a coefficient of 0, inform the solver.
@@ -400,7 +398,7 @@ ClLinearExpression >> substituteOut: var expr: expr subject: subject solver: sol
 
 { #category : #accessing }
 ClLinearExpression >> subtractFrom: aNumber [
-	"Answer a new ClLinearExpression (aNumber/self)."
+	"Answer a new ClLinearExpression (aNumber - self)."
 
 	^ self negated + aNumber
 

@@ -25,8 +25,8 @@ ClEditOrStayConstraint class >> variable: aVariable strength: aStrength weight: 
 
 { #category : #accessing }
 ClEditOrStayConstraint >> expression [
-	| e |
 
+	| e |
 	e := ClLinearExpression new.
 	e constant: self variable value.
 	e terms at: self variable put: -1.0.
