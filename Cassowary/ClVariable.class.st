@@ -182,7 +182,7 @@ ClVariable >> cnLEQ: expr strength: s weight: w [
 ClVariable >> divFrom: aNumber [
 	"We should return a new linear expression (aNumber/self) -- but since the result must be linear, this is always an error."
 
-	ClError nonlinear signal
+	ClNonLinearError signal: 'We should return a new linear expression (aNumber/self) -- but since the result must be linear, this is always an error.'
 ]
 
 { #category : #testing }

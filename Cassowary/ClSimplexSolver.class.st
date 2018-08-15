@@ -1,13 +1,22 @@
 "
 Do any needed setup to begin editing.  The sequence of calls should be:
+
 		solver addEditVar: v1; addEditVar: v2; ... etc.
 		solver beginEdit.
+
 	Then repeat each time new values are provided for the editted variables:
 		solver suggestValue: v1 newValue: nv1.
 		solver suggestValue: v2 newValue: nv2.
 		solver resolve.
+
 	Then to terminate editing:
 		solver endEdit.
+		
+
+The 'autoSolve' instance variable determines whether the solver should automatically optimize and set external variable values after each call to 'addConstraint' and 'removeConstraint'.  By default, auto-solving is on.  However, when auto-solving is off,  'resolve' must be invoked to see changes to the constrained variables.
+		
+	
+
 "
 Class {
 	#name : #ClSimplexSolver,
@@ -161,11 +170,7 @@ ClSimplexSolver >> addWithArtificialVariable: expr [
 
 { #category : #accessing }
 ClSimplexSolver >> autoSolve [
-	"the 'autoSolve' instance variable determines whether the solver should 
-		automatically optimize and set external variable values after each 
-		call to 'addConstraint' and 'removeConstraint'.  By default, auto-solving is on.  However,
-		when auto-solving is off,  'resolve' must be invoked to see changes to the
-		constrained variables"
+	"the 'autoSolve' instance variable determines whether the solver should automatically optimize and set external variable values after each call to 'addConstraint' and 'removeConstraint'.  By default, auto-solving is on.  However, when auto-solving is off,  'resolve' must be invoked to see changes to the constrained variables"
 	^autoSolve
 ]
 
@@ -300,9 +305,9 @@ ClSimplexSolver >> dualOptimize [
 				expr variablesAndCoefficientsDo: [:v :c |
 					(c>0.0 and: [v isPivotable]) ifTrue: [
 						zc := zRow terms at: v ifAbsent: [nil].
-						r := zc isNil ifTrue: [ClSymbolicWeight zero] ifFalse: [zc/c].
+						r := zc isNil ifTrue: [ ClSymbolicWeight zero ] ifFalse: [ zc/c ].
 						(ratio isNil or: [r < ratio or: [r=ratio and: [v hash < entryVar hash]]])  ifTrue: [entryVar := v.  ratio := r]]].
-				ratio isNil ifTrue: [ClError internalError signal].
+				ratio isNil ifTrue: [ClInternalError signal].
 				self pivot: entryVar exitVar: exitVar]]]
 ]
 
@@ -390,7 +395,7 @@ ClSimplexSolver >> findEditErrorIndex: eVars [
 	eVars do: [:v | | index |
 		index := self editPlusErrorVars indexOf: v.
 		index > 0 ifTrue: [^ index]].
-	ClError internalError signal  "didn't find a variable"
+	ClInternalError signal:  'Didn''t find a variable'
 ]
 
 { #category : #private }
@@ -597,7 +602,7 @@ ClSimplexSolver >> optimize: zVar [
 				(minRatio isNil or: [r<minRatio or: [r=minRatio and: [v hash < exitVar hash]]]) ifTrue: [
 					minRatio := r.  exitVar := v]]]].
 		"If minRatio is still nil at this point, it means that the objective function is unbounded, i.e. it can become arbitrarily negative.  This should never happen in this application."
-		minRatio isNil ifTrue: [ClError internalError signal].
+		minRatio isNil ifTrue: [ClInternalError signal: 'If minRatio is still nil at this point, it means that the objective function is unbounded, i.e. it can become arbitrarily negative.  This should never happen in this application.'].
 		self pivot: entryVar exitVar: exitVar]
 ]
 
@@ -781,7 +786,7 @@ where v is the variable with the edit, c is the previous edit value, and eplus a
 
 	self newEditConstants size = self editPlusErrorVars size ifFalse: [
 		"number of edit constants doesn't match the number of edit error variables"
-		ClError internalError signal].
+		ClInternalError signal: 'number of edit constants doesn''t match the number of edit error variables' ].
 	1 to: self newEditConstants size do: [:i |
 		nn := self newEditConstants.
 		pp := self prevEditConstants.
@@ -916,8 +921,8 @@ ClSimplexSolver >> suggestValue: var newValue: val [
 	1 to: self editVars size do: [:i | 
 		(editVars at: i) == var ifTrue: [
 			self newEditConstants at: i put: val.  
-			^self]].
-	ClError signal: 'variable not currently being edited'
+			^ self]].
+	ClInternalError signal: 'Variable is not currently being edited'
 ]
 
 { #category : #private }

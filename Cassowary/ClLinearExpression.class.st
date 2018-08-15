@@ -30,7 +30,7 @@ ClLinearExpression >> * x [
 		ifTrue: [n := x asFloat]
 		ifFalse: [
 			expr := x asLinearExpression.
-			expr isConstant ifFalse: [ClError nonlinear signal "result would be non-linear"].
+			expr isConstant ifFalse: [ClNonLinearError signal: 'result would be non-linear'].
 			n := expr constant].
 	result := ClLinearExpression new.
 	result constant: n * self constant.
@@ -70,7 +70,7 @@ ClLinearExpression >> / x [
 
 	| expr |
 	expr := x asLinearExpression.
-	expr isConstant ifFalse: [ClError nonlinear signal "result would be non-linear"].
+	expr isConstant ifFalse: [ClNonLinearError signal: 'Argument as linear expression must be constant, else result would be non-linear' ].
 	^ self * expr constant reciprocal
 ]
 
@@ -148,7 +148,7 @@ ClLinearExpression >> anyVariable [
 	"Answer any ClAbstractVariable from this expression. (It is an error if this expression is constant)"
 
 	self terms keysDo: [:v | ^ v].
-	ClError signal: 'Expression is constant and this should not be the case'
+	ClInternalError signal: 'Expression is constant and this should not be the case'
 ]
 
 { #category : #conversion }
@@ -300,8 +300,8 @@ ClLinearExpression >> divFrom: aNumber [
 	"Answer a new ClLinearExpression (aNumber/self).  Since the result must be linear, this is permissible only if self is a constant."
 
 	self isConstant ifTrue: [^ aNumber / self constant].
-	"nonLinear Error"
-	ClError signal: 'result would be non-linear'
+
+	ClNonLinearError signal: 'self must be a constant else result would be non-linear'
 ]
 
 { #category : #manipulation }
