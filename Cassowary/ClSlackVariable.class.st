@@ -1,3 +1,11 @@
+"
+a Slack variable is a variable that is used to represent an inequation as an equation. 
+
+for example 
+	x <= e
+	=> 
+	x + s = e where s is >0 and s is a slack variable.  
+"
 Class {
 	#name : #ClSlackVariable,
 	#superclass : #ClAbstractVariable,
