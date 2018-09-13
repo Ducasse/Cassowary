@@ -22,6 +22,11 @@ ClConstraint >> isEditConstraint [
 ]
 
 { #category : #testing }
+ClConstraint >> isFullfilled [
+	self subclassResponsibility 
+]
+
+{ #category : #testing }
 ClConstraint >> isInequality [
 	"Answer true if this is an inequality constraint and false if it is an equality constraint.  Default is equality."
 

@@ -5,6 +5,13 @@ Class {
 }
 
 { #category : #testing }
+ClLinearInequality >> isFullfilled [
+	
+	self expression hasNumericValue ifFalse: [ ^ false ].
+	^ self expression numericValue >= 0
+]
+
+{ #category : #testing }
 ClLinearInequality >> isInequality [
 	"Answer true if this is an inequality constraint and false otherwise."
 	

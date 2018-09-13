@@ -304,6 +304,12 @@ ClLinearExpression >> divFrom: aNumber [
 	ClNonLinearError signal: 'self must be a constant else result would be non-linear'
 ]
 
+{ #category : #accessing }
+ClLinearExpression >> hasNumericValue [
+	
+	^ terms keys allSatisfy: [ :aVar | aVar value isNotNil ]
+]
+
 { #category : #manipulation }
 ClLinearExpression >> incrementConstant: aNumber [
 	"Increment the constant part of this expression by aNumber."
@@ -346,6 +352,12 @@ ClLinearExpression >> newSubject: subject [
 	nreciprocal := (self terms removeKey: subject) reciprocal negated.
 	self constant: nreciprocal * self constant.
 	self terms keysAndValuesDo: [:v :c | self terms at: v put: c*nreciprocal]	
+]
+
+{ #category : #accessing }
+ClLinearExpression >> numericValue [
+	
+	^ (terms associations sumNumbers: [ :assoc | assoc key value * assoc value ]) + constant
 ]
 
 { #category : #printing }
